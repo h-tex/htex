@@ -1,6 +1,6 @@
 {
   "name": "htex",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Academic writing for the 21st century",
   "type": "module",
   "main": "src/index.js",
