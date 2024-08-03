@@ -6,9 +6,10 @@ import scoped from "./scoped.js";
 import imageDimensions from "./image.js";
 import * as filters from "./filters.js";
 
+
 export default function (config, options = {}) {
 	for (let name in filters) {
-		if (typeof filters[name] === "function") {
+		if (typeof filters[name] === "function" && !config.getFilter(name)) {
 			config.addFilter(name, filters[name]);
 		}
 	}
@@ -35,4 +36,11 @@ export default function (config, options = {}) {
 		config.addPlugin(scoped, options.scoped);
 	}
 
+	if (options.serverPort) {
+		config.setServerOptions({
+			port: options.serverPort
+		});
+	}
 }
+
+export { filters };

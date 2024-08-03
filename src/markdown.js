@@ -10,10 +10,14 @@ function isMarkdownIt (value) {
 	return value && value.use && value.renderer;
 }
 
+function isEleventyConfig (value) {
+	return value && value.setLibrary && value.addFilter && value.addPairedShortcode;
+}
+
 export default function (config, options = {}) {
 	let md, eleventy;
 
-	if (config.setLibrary && config.addFilter) {
+	if (isEleventyConfig(config)) {
 		eleventy = config;
 	}
 	else if (isMarkdownIt(config)) {
@@ -21,6 +25,9 @@ export default function (config, options = {}) {
 	}
 	else if (!options) {
 		options = config;
+	}
+	else {
+		throw new Error("[htex] Cannot interpret first argument:", config);
 	}
 
 	md ??= options.instance ?? markdownIt({
