@@ -1,0 +1,42 @@
+{
+  "name": "htex",
+  "version": "0.0.0",
+  "description": "Academic writing for the 21st century",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    "./eleventy": "./src/index.js",
+    "./markdown-it": "./src/markdown-it.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/h-tex/htex.git"
+  },
+  "keywords": [
+    "Markdown",
+    "eleventy",
+    "pandoc",
+    "citations",
+    "cross-references"
+  ],
+  "author": "Lea Verou",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/h-tex/htex/issues"
+  },
+  "homepage": "https://github.com/h-tex/htex#readme",
+  "dependencies": {
+    "eleventy-plugin-citations": "^0.1.6",
+    "eleventy-plugin-outline": "^0.0.6",
+    "image-dimensions": "^2.3.0",
+    "markdown-it-bracketed-spans": "^1.0.1",
+    "markdown-it-sub": "^2.0.0",
+    "markdown-it-sup": "^2.0.0"
+  },
+  "devDependencies": {
+    "release-it": "^17.6.0"
+  }
+}
