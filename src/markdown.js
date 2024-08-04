@@ -5,6 +5,9 @@ import markdownItFootnote from "markdown-it-footnote";
 import markdownItMathjax3 from "markdown-it-mathjax3";
 import markdownItDeflist from "markdown-it-deflist";
 import markdownItTableCaptions from "markdown-it-table-captions";
+import markdownItBracketedSpans from "markdown-it-bracketed-spans";
+import markdownItSup from "markdown-it-sup";
+import markdownItSub from "markdown-it-sub";
 
 function isMarkdownIt (value) {
 	return value && value.use && value.renderer;
@@ -98,6 +101,18 @@ export default function (config, options = {}) {
 
 	if (options.tableCaptions !== false) {
 		md.use(markdownItTableCaptions, options.tableCaptions);
+	}
+
+	if (options.spans !== false) {
+		md.use(markdownItBracketedSpans, options.bracketedSpans);
+	}
+
+	if (options.sup !== false) {
+		md.use(markdownItSup, options.sup);
+	}
+
+	if (options.sub !== false) {
+		md.use(markdownItSub, options.sub);
 	}
 
 	if (eleventy) {
