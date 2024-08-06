@@ -2,6 +2,10 @@
 let defaultNumberFormatter = new Intl.NumberFormat("en-US");
 
 export function number (n, options) {
+	if (typeof options === "number") {
+		options = { maximumSignificantDigits: options };
+	}
+
 	let formatter = options ? new Intl.NumberFormat(options.locale ?? "en-US", options) : defaultNumberFormatter;
 	return formatter.format(n);
 }
