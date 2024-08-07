@@ -5,6 +5,7 @@ export default function (config, {
 	priorities = ["P0", "P1", "P2", "P3"],
 	efforts = ["XS", "S", "M", "L", "XL"],
 	filter = outputPath => true,
+	isDuplicate = page => true,
 	template = todo => `<article class="callout todo" data-prefix="${ todo.prefix }" data-priority="${ todo.priority ?? "" }" data-effort="${ todo.effort ?? "" }">${ todo.comment }</article>`,
 	mdTemplate = todo => {
 		let ret = `- [ ] ${ todo.comment }`;
@@ -40,23 +41,33 @@ export default function (config, {
 	let pattern = RegExp(`<!--\\s*(?<prefix>${ commentPrefix.join("|") })${ annotations }\\s+(?<comment>(?!-->).+?)\\s*-->`, "gis");
 
 	function replace (content, pattern) {
+		let isPageDuplicate = isDuplicate?.(this.page);
 		return content.replaceAll(pattern, (match, prefix, annotations = "", comment) => {
 			let todo = { prefix, comment, url: this.page.url };
-			(byPage[this.page.url] = byPage[this.page.url] ?? []).push(todo);
+
+			if (!isPageDuplicate) {
+				(byPage[this.page.url] = byPage[this.page.url] ?? []).push(todo);
+			}
 
 			todo.annotations = annotations.trim().split(/\s+/).filter(Boolean);
 
 			for (let annotation of todo.annotations) {
 				if (priorities.includes(annotation)) {
 					todo.priority = annotation;
-					(byPriority[annotation] = byPriority[annotation] ?? []).push(todo);
+
+					if (!isPageDuplicate) {
+						(byPriority[annotation] = byPriority[annotation] ?? []).push(todo);
+					}
 				}
 				else if (efforts.includes(annotation)) {
 					todo.effort = annotation;
 				}
 			}
 
-			totalCount++;
+			if (!isPageDuplicate) {
+				totalCount++;
+			}
+
 			return template(todo);
 		});
 	}
