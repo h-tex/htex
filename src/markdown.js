@@ -116,7 +116,7 @@ export default function (config, options = {}) {
 			let footnoteLabel = tokens[idx].meta.label;
 			let footnoteText = footnotes[footnoteLabel];
 			footnoteText = md.renderInline(footnoteText);
-			footnoteText = `<span class="footnote-text">${footnoteText}</span>`
+			footnoteText = `<span class="footnote-text inline" hidden>${footnoteText}</span>`
 
 			return `<sup class="footnote-ref"><a epub:type="noteref" href="#fn${id}" id="fnref${refId}">${caption}</a></sup>${footnoteText}`
 		};
