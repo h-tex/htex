@@ -118,7 +118,7 @@ export default function (config, options = {}) {
 			footnoteText = md.renderInline(footnoteText);
 			footnoteText = `<span class="footnote-text">${footnoteText}</span>`
 
-			return `<sup class="footnote-ref"><a epub:type="noteref" href="#fn${id}" id="fnref${refId}">${caption}</a>${footnoteText}</sup>`
+			return `<sup class="footnote-ref"><a epub:type="noteref" href="#fn${id}" id="fnref${refId}">${caption}</a></sup>${footnoteText}`
 		};
 	}
 
