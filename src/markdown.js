@@ -43,6 +43,42 @@ export default function (config, options = {}) {
 	if (options.footnotes !== false) {
 		md.use(markdownItFootnote, options.footnotes);
 
+		let allFootnotes = new Map(); // pageId → { label: footnote }
+
+		function extractFootnoteTexts (tokens, pageId) {
+			let footnotes = {};
+
+			let label, done;
+			for (let token of tokens) {
+				if (token.type === "footnote_open") {
+					done = false;
+					label = token.meta.label;
+					footnotes[label] = "";
+				}
+				else if (token.type === "footnote_close") {
+					done = true;
+				}
+				else if (done === false) {
+					// Tokens of all other types after footnote_open till footnote_close form a footnote text
+					footnotes[label] += token.content ?? "";
+				}
+			}
+
+			allFootnotes.set(pageId, footnotes);
+		};
+
+		// Override the render method to capture footnote texts
+		md.render = function (src, env) {
+			let tokens = md.parse(src, env);
+
+			let pageId = env.id;
+			if (pageId) {
+				extractFootnoteTexts(tokens, pageId);
+			}
+
+			return md.renderer.render(tokens, md.options, env);
+		};
+
 		md.renderer.rules.footnote_caption = function (tokens, idx) {
 			let n = Number(tokens[idx].meta.id + 1).toString();
 
@@ -56,7 +92,6 @@ export default function (config, options = {}) {
 		const backrefLabel = 'back to text';
 
 		const epubRules = {
-			footnote_ref: ['<a', '<a epub:type="noteref"'],
 			footnote_open: ['<li', '<li epub:type="footnote"'],
 			footnote_anchor: ['<a', `<a aria-label="${backrefLabel}"`],
 		}
@@ -67,17 +102,24 @@ export default function (config, options = {}) {
 				return defaultRender(tokens, idx, options, env, self).replace(...epubRules[rule]);
 			}
 		});
-		// md.renderer.rules.footnote_ref = function (tokens, idx, options, env, slf) {
-		// 	const id = slf.rules.footnote_anchor_name(tokens, idx, options, env, slf);
-		// 	const caption = slf.rules.footnote_caption(tokens, idx, options, env, slf);
-		// 	let refid = id;
 
-		// 	if (tokens[idx].meta.subId > 0) {
-		// 		refid += `:${tokens[idx].meta.subId}`
-		// 	}
+		md.renderer.rules.footnote_ref = function (tokens, idx, options, env, slf) {
+			let id = slf.rules.footnote_anchor_name(tokens, idx, options, env, slf);
+			let caption = slf.rules.footnote_caption(tokens, idx, options, env, slf);
 
-		// 	return `<sup class="footnote-ref"><a href="#fn${id}" id="fnref${refid}">${caption}</a></sup>`
-		// };
+			let refId = id;
+			if (tokens[idx].meta.subId > 0) {
+				refId += `:${tokens[idx].meta.subId}`;
+			}
+
+			let footnotes = allFootnotes.get(env.id);
+			let footnoteLabel = tokens[idx].meta.label;
+			let footnoteText = footnotes[footnoteLabel];
+			footnoteText = md.renderInline(footnoteText);
+			footnoteText = `<span class="footnote-text">${footnoteText}</span>`
+
+			return `<sup class="footnote-ref"><a epub:type="noteref" href="#fn${id}" id="fnref${refId}">${caption}</a>${footnoteText}</sup>`
+		};
 	}
 
 	if (options.math !== false) {
