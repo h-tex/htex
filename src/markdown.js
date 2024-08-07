@@ -46,7 +46,7 @@ export default function (config, options = {}) {
 		let allFootnotes = new Map(); // pageId → { label: footnote }
 
 		function extractFootnoteTexts (tokens, pageId) {
-			let footnotes = {};
+			let footnotes = allFootnotes.get(pageId) ?? {};
 
 			let label, done;
 			for (let token of tokens) {
