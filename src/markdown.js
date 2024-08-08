@@ -58,9 +58,9 @@ export default function (config, options = {}) {
 				else if (token.type === "footnote_close") {
 					done = true;
 				}
-				else if (done === false) {
+				else if (done === false && token.content) {
 					// Tokens of all other types after footnote_open till footnote_close form a footnote text
-					footnotes[label] += token.content ?? "";
+					footnotes[label] += token.content;
 				}
 			}
 
