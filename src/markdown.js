@@ -77,14 +77,18 @@ export default function (config, options = {}) {
 
 		// Override the render method to capture footnote texts
 		md.render = function (src, env) {
-			let tokens = md.parse(src, env);
+			let tokens = this.parse(src, env);
 
 			let pageId = env.id;
 			if (pageId) {
 				extractFootnoteTexts(tokens, pageId);
 			}
 
-			return md.renderer.render(tokens, md.options, env);
+			// We don't want every footnote to be parsed and rendered twice,
+			// so we render already parsed tokens to ensure no re-parsing or re-rendering occurs.
+			// At the same time, we want to avoid any conflicts with other plugins,
+			// so we use the original render method to render the tokens.
+			return this.renderer.render(tokens, this.options, env);
 		};
 
 		md.renderer.rules.footnote_caption = function (tokens, idx) {
