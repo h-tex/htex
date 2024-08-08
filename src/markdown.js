@@ -111,23 +111,17 @@ export default function (config, options = {}) {
 			}
 		});
 
-		// Code from https://github.com/markdown-it/markdown-it-footnote/blob/fe6c169c72b9f4d6656b10aa449128456f5a990e/index.mjs#L25-L33
+		// Monkey-patch the footnote_ref rule to include the footnote text
+		let originalFootnoteRef = md.renderer.rules.footnote_ref;
 		md.renderer.rules.footnote_ref = function (tokens, idx, options, env, slf) {
-			let id = slf.rules.footnote_anchor_name(tokens, idx, options, env, slf);
-			let caption = slf.rules.footnote_caption(tokens, idx, options, env, slf);
-
-			let refId = id;
-			if (tokens[idx].meta.subId > 0) {
-				refId += `:${tokens[idx].meta.subId}`;
-			}
-
+			let footnoteRef = originalFootnoteRef(tokens, idx, options, env, slf);
 			let footnotes = allFootnotes.get(env.id);
 			let footnoteLabel = tokens[idx].meta.label;
 			let footnoteText = footnotes[footnoteLabel];
 			footnoteText = md.renderInline(footnoteText);
-			footnoteText = `<span class="footnote-text inline" hidden>${footnoteText}</span>`
+			footnoteText = `<span class="footnote-text inline" hidden>${footnoteText}</span>`;
 
-			return `<sup class="footnote-ref"><a epub:type="noteref" href="#fn${id}" id="fnref${refId}">${caption}</a></sup>${footnoteText}`
+			return footnoteRef + footnoteText
 		};
 	}
 
