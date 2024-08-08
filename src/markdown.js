@@ -45,12 +45,20 @@ export default function (config, options = {}) {
 
 		let allFootnotes = new Map(); // pageId → { label: footnote }
 
+		/**
+		 * Extract and store footnote texts from a given set of tokens for a specific page
+		 * so that footnotes can be referenced and/or displayed appropriately in different document parts.
+		 * For example, it allows the markdown-it-footnote plugin and Paged.js to process the same footnotes correctly.
+		 * @param {markdownIt.Token[]} tokens
+		 * @param {string} pageId
+		 */
 		function extractFootnoteTexts (tokens, pageId) {
 			let footnotes = allFootnotes.get(pageId) ?? {};
 
 			let label, done;
 			for (let token of tokens) {
 				if (token.type === "footnote_open") {
+					// We have a new footnote to process
 					done = false;
 					label = token.meta.label;
 					footnotes[label] = "";
@@ -59,7 +67,7 @@ export default function (config, options = {}) {
 					done = true;
 				}
 				else if (done === false && token.content) {
-					// Tokens of all other types after footnote_open till footnote_close form a footnote text
+					// Tokens of all other types after “footnote_open” till “footnote_close” form a footnote text
 					footnotes[label] += token.content;
 				}
 			}
