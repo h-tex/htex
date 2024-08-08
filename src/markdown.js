@@ -103,6 +103,7 @@ export default function (config, options = {}) {
 			}
 		});
 
+		// Code from https://github.com/markdown-it/markdown-it-footnote/blob/fe6c169c72b9f4d6656b10aa449128456f5a990e/index.mjs#L25-L33
 		md.renderer.rules.footnote_ref = function (tokens, idx, options, env, slf) {
 			let id = slf.rules.footnote_anchor_name(tokens, idx, options, env, slf);
 			let caption = slf.rules.footnote_caption(tokens, idx, options, env, slf);
