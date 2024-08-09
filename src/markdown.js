@@ -43,6 +43,54 @@ export default function (config, options = {}) {
 	if (options.footnotes !== false) {
 		md.use(markdownItFootnote, options.footnotes);
 
+		let allFootnotes = new Map(); // pageId → { label: footnote }
+
+		/**
+		 * Extract and store footnote texts from a given set of tokens for a specific page
+		 * so that footnotes can be referenced and/or displayed appropriately in different document parts.
+		 * For example, it allows the markdown-it-footnote plugin and Paged.js to process the same footnotes correctly.
+		 * @param {markdownIt.Token[]} tokens
+		 * @param {string} pageId
+		 */
+		function extractFootnoteTexts (tokens, pageId) {
+			let footnotes = allFootnotes.get(pageId) ?? {};
+
+			let label, done;
+			for (let token of tokens) {
+				if (token.type === "footnote_open") {
+					// We have a new footnote to process
+					done = false;
+					label = token.meta.label;
+					footnotes[label] = "";
+				}
+				else if (token.type === "footnote_close") {
+					done = true;
+				}
+				else if (done === false && token.content) {
+					// Tokens of all other types after “footnote_open” till “footnote_close” form a footnote text
+					footnotes[label] += token.content;
+				}
+			}
+
+			allFootnotes.set(pageId, footnotes);
+		};
+
+		// Override the render method to capture footnote texts
+		md.render = function (src, env) {
+			let tokens = this.parse(src, env);
+
+			let pageId = env.id;
+			if (pageId) {
+				extractFootnoteTexts(tokens, pageId);
+			}
+
+			// We don't want every footnote to be parsed and rendered twice,
+			// so we render already parsed tokens to ensure no re-parsing or re-rendering occurs.
+			// At the same time, we want to avoid any conflicts with other plugins,
+			// so we use the original render method to render the tokens.
+			return this.renderer.render(tokens, this.options, env);
+		};
+
 		md.renderer.rules.footnote_caption = function (tokens, idx) {
 			let n = Number(tokens[idx].meta.id + 1).toString();
 
@@ -56,7 +104,6 @@ export default function (config, options = {}) {
 		const backrefLabel = 'back to text';
 
 		const epubRules = {
-			footnote_ref: ['<a', '<a epub:type="noteref"'],
 			footnote_open: ['<li', '<li epub:type="footnote"'],
 			footnote_anchor: ['<a', `<a aria-label="${backrefLabel}"`],
 		}
@@ -67,17 +114,19 @@ export default function (config, options = {}) {
 				return defaultRender(tokens, idx, options, env, self).replace(...epubRules[rule]);
 			}
 		});
-		// md.renderer.rules.footnote_ref = function (tokens, idx, options, env, slf) {
-		// 	const id = slf.rules.footnote_anchor_name(tokens, idx, options, env, slf);
-		// 	const caption = slf.rules.footnote_caption(tokens, idx, options, env, slf);
-		// 	let refid = id;
 
-		// 	if (tokens[idx].meta.subId > 0) {
-		// 		refid += `:${tokens[idx].meta.subId}`
-		// 	}
+		// Monkey-patch the footnote_ref rule to include the footnote text
+		let originalFootnoteRef = md.renderer.rules.footnote_ref;
+		md.renderer.rules.footnote_ref = function (tokens, idx, options, env, slf) {
+			let footnoteRef = originalFootnoteRef(tokens, idx, options, env, slf);
+			let footnotes = allFootnotes.get(env.id);
+			let footnoteLabel = tokens[idx].meta.label;
+			let footnoteText = footnotes[footnoteLabel];
+			footnoteText = md.renderInline(footnoteText);
+			footnoteText = `<span class="footnote-text inline" hidden>${footnoteText}</span>`;
 
-		// 	return `<sup class="footnote-ref"><a href="#fn${id}" id="fnref${refid}">${caption}</a></sup>`
-		// };
+			return footnoteRef + footnoteText
+		};
 	}
 
 	if (options.math !== false) {
