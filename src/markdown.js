@@ -35,10 +35,10 @@ export default function (config, options = {}) {
 	}
 
 	md ??= options.instance ?? markdownIt({
-		...(options.markdownIt ?? {}),
 		html: true,
 		linkify: true,
 		typographer: true,
+		...(options.markdownIt ?? {}),
 	}).disable("code");
 
 	if (options.footnotes !== false) {
