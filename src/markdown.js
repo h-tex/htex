@@ -9,6 +9,7 @@ import markdownItSup from "markdown-it-sup";
 import markdownItSub from "markdown-it-sub";
 
 import footnotes from "./md/footnotes.js";
+import betterLinkify from "./md/better-linkify.js";
 
 function isMarkdownIt (value) {
 	return value && value.use && value.renderer;
@@ -40,6 +41,10 @@ export default function (config, options = {}) {
 		typographer: true,
 		...(options.markdownIt ?? {}),
 	}).disable("code");
+
+	if (options.betterLinkify !== false && options.linkify !== false) {
+		betterLinkify(md, options.betterLinkify);
+	}
 
 	if (options.footnotes !== false) {
 		footnotes(md, options.footnotes);
