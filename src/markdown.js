@@ -1,12 +1,6 @@
 import markdownIt from "markdown-it";
-import markdownItAttrs from "markdown-it-attrs";
 import markdownItPrism from "markdown-it-prism";
-import markdownItMathjax3 from "markdown-it-mathjax3";
-import markdownItDeflist from "markdown-it-deflist";
-import markdownItTableCaptions from "markdown-it-table-captions";
-import markdownItBracketedSpans from "markdown-it-bracketed-spans";
-import markdownItSup from "markdown-it-sup";
-import markdownItSub from "markdown-it-sub";
+import * as plugins from "./md/plugins.js";
 
 import footnotes from "./md/footnotes.js";
 import betterLinkify from "./md/better-linkify.js";
@@ -50,12 +44,10 @@ export default function (config, options = {}) {
 		footnotes(md, options.footnotes);
 	}
 
-	if (options.math !== false) {
-		md.use(markdownItMathjax3, options.math);
-	}
-
-	if (options.attributes !== false) {
-		md.use(markdownItAttrs, options.attributes);
+	for (let pluginId in plugins) {
+		if (options[pluginId] !== false) {
+			md.use(plugins[pluginId], options[pluginId]);
+		}
 	}
 
 	if (options.codeHighlight !== false) {
@@ -63,26 +55,6 @@ export default function (config, options = {}) {
 			plugins: ["normalize-whitespace"],
 			...(options.codeHighlight ?? {}),
 		});
-	}
-
-	if (options.definitionLists !== false) {
-		md.use(markdownItDeflist, options.definitionLists);
-	}
-
-	if (options.tableCaptions !== false) {
-		md.use(markdownItTableCaptions, options.tableCaptions);
-	}
-
-	if (options.spans !== false) {
-		md.use(markdownItBracketedSpans, options.bracketedSpans);
-	}
-
-	if (options.sup !== false) {
-		md.use(markdownItSup, options.sup);
-	}
-
-	if (options.sub !== false) {
-		md.use(markdownItSub, options.sub);
 	}
 
 	if (eleventy) {
