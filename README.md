@@ -24,11 +24,30 @@ eleventyConfig.use(htex, { /* options */ });
 ### Just the markdown-it plugins
 
 If you don’t use 11ty, you can still use the markdown-it plugins.
+There are two ways to do that: if you don’t already have a markdown instance,
+you can simply get one back from hTex:
 
 ```js
 import htex from "htex/markdown-it";
 
 let md = htex({ /* options */ });
+```
+
+If you already have a markdown-it instance, you can add the plugins to it:
+
+```js
+import htex from "htex/markdown-it";
+htex(md, { /* options */ });
+```
+
+or:
+
+```js
+import htex from "htex/markdown-it";
+htex({
+	instance: md,
+	/* options */
+});
 ```
 
 ## Plugins
