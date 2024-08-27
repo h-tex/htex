@@ -76,15 +76,17 @@ export default function(md, options) {
 	});
 
 	// Monkey-patch the footnote_ref rule to include the footnote text
-	let originalFootnoteRef = md.renderer.rules.footnote_ref;
-	md.renderer.rules.footnote_ref = function (tokens, idx, options, env, slf) {
-		let footnoteRef = originalFootnoteRef(tokens, idx, options, env, slf);
-		let footnotes = allFootnotes.get(env.id);
-		let footnoteLabel = tokens[idx].meta.label;
-		let footnoteText = footnotes[footnoteLabel];
-		footnoteText = md.renderInline(footnoteText);
-		footnoteText = `<span class="footnote-text inline" hidden>${footnoteText}</span>`;
+	{
+		let defaultRender = md.renderer.rules.footnote_ref;
+		md.renderer.rules.footnote_ref = function (tokens, idx, options, env, slf) {
+			let footnoteRef = defaultRender(tokens, idx, options, env, slf);
+			let footnotes = allFootnotes.get(env.id);
+			let footnoteLabel = tokens[idx].meta.label;
+			let footnoteText = footnotes[footnoteLabel];
+			footnoteText = md.renderInline(footnoteText);
+			footnoteText = `<span class="footnote-text inline" hidden>${footnoteText}</span>`;
 
-		return footnoteRef + footnoteText
-	};
+			return footnoteRef + footnoteText
+		};
+	}
 }
