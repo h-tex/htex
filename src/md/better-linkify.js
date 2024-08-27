@@ -19,7 +19,10 @@ export default function betterLinkify (md, options) {
 		text: function (token) {
 			if (linkHref === token.content) {
 				// We’re inside an autolink
-				token.content = token.content.replace(/https?:\/\/(www\.)?/g, "");
+				token.content = token.content
+					.replace(/https?:\/\/(www\.)?/g, "")
+					.replace(/\/$/, "")
+				;
 			}
 		},
 		link_close: function () {
