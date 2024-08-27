@@ -1,7 +1,7 @@
 import markdownItFootnote from "markdown-it-footnote";
 import { renderAfter } from "./util.js";
 
-export default function(md, options) {
+export default function (md, options) {
 	md.use(markdownItFootnote, options);
 
 	let allFootnotes = new Map(); // pageId → { label: footnote }

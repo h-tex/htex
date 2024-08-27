@@ -1,20 +1,10 @@
-import markdownItPrism from "markdown-it-prism";
 import * as plugins from "./md/plugins.js";
+import * as localPlugins from "./md/plugins-local.js";
 
-import footnotes from "./md/footnotes.js";
-import betterLinkify from "./md/better-linkify.js";
 import { init } from "./md/util.js";
 
 export default function (...args) {
 	let { md, eleventy, options } = init(...args);
-
-	if (options.betterLinkify !== false && options.linkify !== false) {
-		betterLinkify(md, options.betterLinkify);
-	}
-
-	if (options.footnotes !== false) {
-		footnotes(md, options.footnotes);
-	}
 
 	for (let pluginId in plugins) {
 		if (options[pluginId] !== false) {
@@ -22,11 +12,10 @@ export default function (...args) {
 		}
 	}
 
-	if (options.codeHighlight !== false) {
-		md.use(markdownItPrism, {
-			plugins: ["normalize-whitespace"],
-			...(options.codeHighlight ?? {}),
-		});
+	for (let pluginId in localPlugins) {
+		if (options[pluginId] !== false) {
+			localPlugins[pluginId](md, options[pluginId]);
+		}
 	}
 
 	if (eleventy) {
