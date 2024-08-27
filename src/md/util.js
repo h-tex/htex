@@ -1,3 +1,40 @@
+import markdownIt from "markdown-it";
+
+function isMarkdownIt (value) {
+	return value && value.use && value.renderer;
+}
+
+function isEleventyConfig (value) {
+	return value && value.setLibrary && value.addFilter && value.addPairedShortcode;
+}
+
+export function init (...args) {
+	let md, eleventy, options;
+
+	if (isEleventyConfig(args[0])) {
+		eleventy = args[0];
+	}
+	else if (isMarkdownIt(args[0])) {
+		md = args[0];
+	}
+	else if (!options) {
+		options = args[0];
+	}
+	else {
+		throw new Error("[htex] Cannot interpret first argument:", config);
+	}
+
+	options ??= args[1] ?? {};
+	md ??= options.instance ?? markdownIt({
+		html: true,
+		linkify: true,
+		typographer: true,
+		...(options.markdownIt ?? {}),
+	}).disable("code");
+
+	return { md, eleventy, options };
+}
+
 export function defaultTokenRender (tokens, idx, options, env, self) {
 	return self.renderToken(tokens, idx, options);
 };

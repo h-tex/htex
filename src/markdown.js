@@ -1,40 +1,12 @@
-import markdownIt from "markdown-it";
 import markdownItPrism from "markdown-it-prism";
 import * as plugins from "./md/plugins.js";
 
 import footnotes from "./md/footnotes.js";
 import betterLinkify from "./md/better-linkify.js";
+import { init } from "./md/util.js";
 
-function isMarkdownIt (value) {
-	return value && value.use && value.renderer;
-}
-
-function isEleventyConfig (value) {
-	return value && value.setLibrary && value.addFilter && value.addPairedShortcode;
-}
-
-export default function (config, options = {}) {
-	let md, eleventy;
-
-	if (isEleventyConfig(config)) {
-		eleventy = config;
-	}
-	else if (isMarkdownIt(config)) {
-		md = config;
-	}
-	else if (!options) {
-		options = config;
-	}
-	else {
-		throw new Error("[htex] Cannot interpret first argument:", config);
-	}
-
-	md ??= options.instance ?? markdownIt({
-		html: true,
-		linkify: true,
-		typographer: true,
-		...(options.markdownIt ?? {}),
-	}).disable("code");
+export default function (...args) {
+	let { md, eleventy, options } = init(...args);
 
 	if (options.betterLinkify !== false && options.linkify !== false) {
 		betterLinkify(md, options.betterLinkify);
