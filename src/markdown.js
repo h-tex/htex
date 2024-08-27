@@ -8,7 +8,7 @@ import markdownItBracketedSpans from "markdown-it-bracketed-spans";
 import markdownItSup from "markdown-it-sup";
 import markdownItSub from "markdown-it-sub";
 
-import footnotes from "./md-footnotes.js";
+import footnotes from "./md/footnotes.js";
 
 function isMarkdownIt (value) {
 	return value && value.use && value.renderer;
