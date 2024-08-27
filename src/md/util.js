@@ -52,11 +52,24 @@ export function renderBefore (md, token, callback) {
 
 	return md.renderer.rules[token] = (tokens, idx, options, env, self) => {
 		let ret = callback(tokens[idx], tokens, idx, options, env, self);
+		return ret === undefined ? defaultRender(tokens, idx, options, env, self) : ret;
+	}
+}
 
-		if (ret !== undefined) {
-			return ret;
+export function renderAfter (md, token, callback) {
+	if (arguments.length === 2 && typeof token === "object") {
+		// Overriding multiple tokens
+		for (let key in token) {
+			renderAfter(md, key, token[key]);
 		}
+		return;
+	}
 
-		return defaultRender(tokens, idx, options, env, self);
+	let defaultRender = md.renderer.rules[token] || defaultTokenRender;
+
+	return md.renderer.rules[token] = (tokens, idx, options, env, self) => {
+		let text = defaultRender(tokens, idx, options, env, self);
+		let ret = callback(text, tokens[idx], tokens, idx, options, env, self);
+		return ret === undefined ? text : ret;
 	}
 }
