@@ -6,7 +6,7 @@
   "main": "src/index.js",
   "exports": {
     "./eleventy": "./src/index.js",
-    "./markdown-it": "./src/markdown-it.js",
+    "./markdown-it": "./src/markdown.js",
     "./markdown-it/footnotes.css": "./src/md/footnotes.css"
   },
   "scripts": {
