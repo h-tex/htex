@@ -72,7 +72,25 @@ You can _just_ add the Markdown plugins by using the `htex/markdown` export.
 | [markdown-it-mathjax3](https://npmjs.com/package/markdown-it-mathjax3) | `math` | Math rendering (using MathJax 3). |
 | [markdown-it-deflist](https://npmjs.com/package/markdown-it-deflist) | `definitionLists` | Definition lists. |
 | [markdown-it-table-captions](https://npmjs.com/package/markdown-it-table-captions) | `tableCaptions` | Table captions. |
-| [markdown-it-footnote](https://npmjs.com/package/markdown-it-footnote) | `footnote` | Footnotes. |
+| [markdown-it-footnote](https://npmjs.com/package/markdown-it-footnote) | `footnote` | Footnotes. Comes with an optional `footnotes.css` for styling footnotes with a separator line and proper spacing. |
 | [markdown-it-bracketed-spans](https://npmjs.com/package/markdown-it-bracketed-spans) | `spans` | Concise bracketed spans. |
 | [markdown-it-sup](https://npmjs.com/package/markdown-it-sup) | `sup` | Superscripts using `^`. |
 | [markdown-it-sub](https://npmjs.com/package/markdown-it-sub) | `sub` | Subscripts using `~`. |
+
+## Styling
+
+### Footnotes
+
+To style footnotes, you can import the included CSS file:
+
+```css
+@import "htex/markdown-it/footnotes.css";
+```
+
+This provides a clean layout for footnotes with:
+- Superscript footnote references
+- A separator line before the footnotes section
+- Proper spacing and alignment
+- Customizable separator length and thickness via CSS custom properties:
+  - `--footnotes-separator-length` (default: `15ch`)
+  - `--footnotes-separator-thickness` (default: `1px`)

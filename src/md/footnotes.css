@@ -1,0 +1,40 @@
+.footnote-ref,
+.footnote::before {
+	font-size: 70%;
+	vertical-align: super;
+}
+
+.footnote {
+	position: relative;
+	padding-inline-start: .5em;
+	margin-inline-start: -1em;
+	page-break-before: avoid;
+	counter-increment: footnote;
+	font-size: 70%;
+	line-height: 1.2;
+
+	&:nth-child(1 of .footnote) {
+		margin-top: 1em;
+		padding-block-start: 1lh;
+		background: linear-gradient(currentcolor 0% 100%) 0 0 / var(--footnotes-separator-length, 15ch) var(--footnotes-separator-thickness, 1px) no-repeat;
+
+		.footnote-marker {
+			inset-block-start: 1lh;
+		}
+	}
+
+	.footnote-marker {
+		position: absolute;
+		inset-inline-end: 100%;
+		inset-block-start: 0;
+	}
+}
+
+.footnote-backref {
+	font-family: monospace;
+
+	&::after {
+		/* Prevent display as emoji */
+		content: "\FE0E";
+	}
+}
