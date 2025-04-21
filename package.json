@@ -46,6 +46,6 @@
     "reading-time": "^1.5"
   },
   "devDependencies": {
-    "release-it": "^17.6.0"
+    "release-it": "^19.0.1"
   }
 }
